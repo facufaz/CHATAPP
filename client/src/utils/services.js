@@ -28,11 +28,14 @@ export const getRequest = async( url ) => {
 
     const data = await response.json();
 
-    if(data){
-        return { error: false, data};
-    } else{
-        return { error: true};
+    if(!response.ok){
+        let message = data.message
     }
-  
+    // if(data){
+    //     return { error: false, data};
+    // } else{
+    //     return { error: true};
+    // }
+  return data;
 
 }

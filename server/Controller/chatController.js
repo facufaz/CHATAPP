@@ -27,13 +27,13 @@ const createChat = async (req, res) => {
 
 const findUserChats = async (req, res) => {
     const userId = req.params.userId;
-    console.log(req.params)
+  
     try{
-        console.log('chat1')
+       
         const chats = await chatModel.findOne({
             members: {$in: [userId]},
         });       
-        console.log('chat2', chats)
+       
         res.send({status: 200, chat: chats})
 
     }catch(error){
@@ -47,11 +47,10 @@ const findChat = async (req, res) => {
     const {firstId, secondId} = req.params;
 
     try{
-        console.log('chat')
+       
         const chat = await chatModel.findOne(
             {members: {$all: [firstId, secondId]}}
         );
-        console.log('chat', chat)
         res.status(200).json(chat)
     }catch(error){
         console.log(error)
