@@ -71,7 +71,7 @@ const findUser = async ( req, res ) => {
 const getUsers = async ( req, res ) => {
 try{
     const user = await userModel.find(); 
-    res.status(200).json(users)
+    res.status(200).json(user)
 }catch{
     console.log(error);
     res.status(500).json({message: "ERROR GETTING USERS..."})    

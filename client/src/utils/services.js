@@ -24,18 +24,16 @@ export const postRequest = async( url, body ) => {
 }
 
 export const getRequest = async( url ) => {
+
     const response = await fetch(url);
 
     const data = await response.json();
 
     if(!response.ok){
+       
         let message = data.message
     }
-    // if(data){
-    //     return { error: false, data};
-    // } else{
-    //     return { error: true};
-    // }
+    
   return data;
 
 }
