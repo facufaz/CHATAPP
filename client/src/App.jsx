@@ -10,13 +10,9 @@ import { useContext } from 'react'
 import { AuthContext } from './context/AuthContext'
 import { ChatContextProvider } from './context/ChatContext'
 
-
-
-
 function App() {
     const { user } = useContext(AuthContext)
   return ( 
-    
     <ChatContextProvider user={ user } >
      <NavBar/> 
       <Container className=''>
