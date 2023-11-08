@@ -3,6 +3,7 @@ import { useFetchRecipientUser } from "../../hooks/useFetchRecipients";
 import { Stack } from "react-bootstrap";
 import Avatar from "../../assets/Avatar.svg"
 import { useContext } from "react";
+import { ChatContext } from "../../context/ChatContext";
 
 const UserChat = ({ chat, user }) => {
     const { recipientUser } = useFetchRecipientUser(chat, user);
