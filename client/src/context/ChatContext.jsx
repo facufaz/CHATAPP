@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/prop-types */
 
 import { createContext, useState, useEffect, useCallback } from "react";  
@@ -15,10 +16,14 @@ export const ChatContextProvider = ({ children, user }) => {
     const [ messages, setMessages ] = useState([])
     const [ isMessagesLoading, setIsMessagesLoading ] = useState(false)
     const [ messagesError, setMessagesError ] = useState(null)
+    // eslint-disable-next-line no-unused-vars
     const [ sendTextMessageError, setSendTextMessageError ] = useState(null)
     const [ newMessage, setNewMessage ] = useState("") 
     const [ socket, setSocket ] = useState(null)
     const [ onlineUsers, setOnlineUsers ] = useState([])
+    const [ notification, setNotifications ] = useState([ ])
+    const [ allUsers, setAllUsers ] = useState([])
+
 
     console.log("onlineUsers", onlineUsers)
 
@@ -31,13 +36,53 @@ export const ChatContextProvider = ({ children, user }) => {
         }
     },[user])
 
+// online users
     useEffect(() => {
         if(socket === null) return;
         socket.emit("addNewUser", user?._id);
         socket.on("getOnlineUsers", (res)=>{
             setOnlineUsers(res)
         });
+
+
     }, [socket]);
+   
+// send message
+    useEffect(() => {
+        if(socket === null) return;
+
+        const recipientId = currentChat?.members?.find(id => id !== user?._id)
+
+        socket.emit("sendMessage", {...newMessage, recipientId});
+   
+    }, [newMessage]);
+
+// recieve messages and notification
+
+    useEffect(() => {
+        if(socket === null) return;
+
+        socket.on("getMessage", (res) => {
+            if(currentChat?._id !== res.chatId) return;
+            
+             setMessages((prev) => [...prev, res]);
+        })
+
+        socket.on("getNotification", (res) => {
+            const isChatOpen = currentChat?.members.some((id) => id === res.senderId)
+        
+            if(isChatOpen){
+                setNotifications((prev) => [{...res, isRead: true}, ...prev])
+            }else {
+                setNotifications(prev => [res, ...prev])
+            }
+        })
+
+        return () => {
+            socket.off("getMessage")
+            socket.off("getNotification")
+        }
+    }, [socket, currentChat]);
 
     useEffect(() => {
         const getUsers = async () => {
@@ -61,7 +106,7 @@ export const ChatContextProvider = ({ children, user }) => {
                 return !isChatCreated
             })
             setPotentialChats(pChats)
-        
+            setAllUsers(response)
         }
         getUsers();
     },[userChats])
@@ -142,9 +187,9 @@ export const ChatContextProvider = ({ children, user }) => {
                 if(response.error){
                     return setSendTextMessageError(response); 
                 }
-                setNewMessage(response);
+                setNewMessage(response)
                 setMessages((prev) => [...prev, response])
-                setTextMessage("")
+                setTextMessage(" ")
            
             },[] )
 
@@ -162,7 +207,9 @@ export const ChatContextProvider = ({ children, user }) => {
         messagesError,
         isMessagesLoading,
         sendTextMessage,
-        onlineUsers
+        onlineUsers,
+        notification,
+        allUsers
         }}>
          {children}
          </ChatContext.Provider>
